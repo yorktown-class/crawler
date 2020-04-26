@@ -55,12 +55,10 @@ function seedget(format) {
             var fetch_url_Sql_Params = [myURL];
             mysql.query(fetch_url_Sql, fetch_url_Sql_Params, function(qerr, vals, fields) {
                 if (vals.length > 0) {
-                    console.log('URL duplicate!')
-                    // return;
-                } else {
-                    console.log('读取新闻');
-                    newsGet(myURL,format); //读取新闻页面
+                    return console.log('URL duplicate!')
                 }
+                console.log('读取新闻');
+                newsGet(myURL,format); //读取新闻页面
             });
         });
     });
