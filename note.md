@@ -135,13 +135,77 @@ JS的函数貌似和其他数据类型没有区别，也可以作为参数传递
 
 其实我第一天就爬了一些数据了，但是不知道怎么搜索。查到elasticsearch可以实现搜索但是一直没搞明白怎么用，就一直搁置了。
 
+本来我是按照标题存成一个个文件的（https://github.com/ya-hong/crawler/blob/master/del/baidunews.js），但是把数据保存到数据库里有很多好处。是直接解决了搜索的问题，而且是查询编码、标题、作者、时间、关键词、摘要、内容、来源等信息比在文件中重新查找要方便且高效。
 
+在代码中连接数据库要用到mysql包。主要用到的函数：
+
+```javascript
+var pool = mysql.createPool({
+    host: '127.0.0.1',
+    user: '',
+    password: '',
+    database: ''
+});
+pool.getConnection(function(err, conn) {//连接
+    if (err) {
+        //错误处理
+    }
+    else {
+    	conn.query(sql, sqlparam,function(qerr, vals, fields) {//sql 为数据库命令,sqlparam为参数
+        	conn.release();
+        });
+    }
+}
+```
+
+代码：https://github.com/ya-hong/crawler/blob/master/mysql.js
 
 ## 正则表达式
+
+在种子页面上用cheerio找到的链接可能会包含非新闻页面的链接。如果能找到新闻页面和非新闻页面链接的区别，可以用正则表达式将它们区分开来。
+
+一开始看到有点头大，但是实际上网页链接中只有字母、数字、冒号和斜杠。连空格和换行都没有，这样实际上用不到太多语法。
+
+正则描述了一种字符串匹配的模式。列一下我用到的语法：
+
+|字符 | 含义|
+| ------ | -------------------- |
+|      \  |  转义             |
+| .      | 匹配一个非换行字符   |
+| {n, m} | 匹配前一个子表达式n到m次 |
+|   {n, }       |匹配前一个子表达式至少n次                             |
+| *      | 等价于{0,}           |
+| ^      | 匹配输入字符串的开始位置                  |
+| $      |            匹配输入字符串的结束位置          |
+| (str)     |   匹配str，且str为一个子表达式                   |
+| [a-z]  |     匹配'a'-'z'的一个字母                 |
+| [0,9]  |            匹配'0'-'9'的一个数字          |
+
+一个测试正则表达式的网站：http://c.runoob.com/front-end/854
+
+js中的正则表达式要写在`/       /` 中，例如：
+
+```javascript
+url_reg = /\/\/www\.sohu\.com\/a\/.*/
+```
+
+可以匹配
+
+```
+//www.sohu.com/a/391299036_114988?spm=smpc.news-home.top-news2.1.1587894845483yLbRjQ5
+
+//www.sohu.com/a/391306114_115362?spm=smpc.news-home.top-news3.2.1587894845483yLbRjQ5
+
+//www.sohu.com/a/391335217_161795?spm=smpc.news-home.top-news3.4.1587894845483yLbRjQ5
+```
 
 
 
 ## express 框架
+
+说好尽量不使用任何框架，但是我还是不太会怎么写html代码。html连接数据库就不会了，还是要抄老师代码-_-||。
+
+
 
 
 
