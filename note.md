@@ -221,9 +221,60 @@ https://github.com/ya-hong/crawler/blob/master/del/baidunews.js
 
 基本就是简单的用request获取html，再用cheerio查找标题、链接和正文，然后写入文件。
 
-### 稍微改进一点
+## 稍微改进一点
+
+https://github.com/ya-hong/crawler/blob/master/del/xinglang.js
+
+这次多检索了几个关键词。但是由于我不会搜索，后面就不想改进了。
+
+## 老师的代码
+
+https://github.com/ya-hong/crawler/tree/master/teachersCode
+
+后面的基本就在老师的模板上改动了。
+
+## 比较成熟的代码
+
+做了一些微小的工作。
+
+### 链接的获取
+
+老师给出的代码基本就是如果能用正则表达式匹配到东西，那么就把这个链接算作又用的链接
+
+```javascript
+var href = "";
+href = $(e).attr("href");
+if (href == undefined) return;
+if (href.toLowerCase().indexOf('http://') >= 0) myURL = href; //http://开头的
+else if (href.startsWith('//')) myURL = 'http:' + href; ////开头的
+else myURL = seedURL.substr(0, seedURL.lastIndexOf('/') + 1) + href; //其他
+```
+
+我在写爬虫的时候发现有时候href里会有两个链接连在一起的情况。 比如`https://news.sina.com.cn/https://news.sina.com.cn/c/2020-04-26/doc-iirczymi8398853.shtml`，我不知道怎么解决。
+
+所以我就直接从`//`匹配到了结尾：
+
+```javascript
+var href = "";
+href = $(e).attr("href");
+if (href == undefined) return;
+if (!format.url_reg.test(href)) return;
+myURL = "http:"+format.url_reg.exec(href)[0];
+```
+
+其中
+
+```javascript
+format.url_reg=/\/\/news.sina.com.cn\/[a-z]\/.*\.shtml/
+```
+
+这样既解决了链接粘在一起的问题，又不需要判断这个链接到底是http开头、https开头还是//开头了。
 
 
+
+### 一些细节
+
+data的特判
 
 # 成果展示
 
