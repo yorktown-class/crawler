@@ -205,11 +205,21 @@ url_reg = /\/\/www\.sohu\.com\/a\/.*/
 
 说好尽量不使用任何框架，但是我还是不太会怎么写html代码。html连接数据库就不会了，还是要抄老师代码-_-||。
 
+`express -e search_site` 生成一个search_site文件夹，将[mysql.js](https://github.com/ya-hong/crawler/blob/master/mysql.js)拷贝进文件夹，再修改[`search_site/routes/index.js`](https://github.com/ya-hong/crawler/blob/master/search_site/routes/index.js) ,把[search.html](https://github.com/ya-hong/crawler/blob/master/search_site/public/search.html)拷贝进public文件夹，我们就抄完了代码。
+
+用node运行`search_site/bin/www`就可以访问`localhost:3000/search.html`来搜索了。
 
 
 
+# 代码实现
 
-# 代码实现&成果展示
+## 最初的代码
+
+https://github.com/ya-hong/crawler/blob/master/del/baidunews.js
+
+
+
+# 成果展示
 
 
 
