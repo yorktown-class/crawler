@@ -217,7 +217,7 @@ url_reg = /\/\/www\.sohu\.com\/a\/.*/
 
 https://github.com/ya-hong/crawler/blob/master/del/baidunews.js
 
-
+因为被异步搞懵了，我这里的callback完全是乱写的。
 
 # 成果展示
 
