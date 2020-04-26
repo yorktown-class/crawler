@@ -270,7 +270,81 @@ format.url_reg=/\/\/news.sina.com.cn\/[a-z]\/.*\.shtml/
 
 这样既解决了链接粘在一起的问题，又不需要判断这个链接到底是http开头、https开头还是//开头了。
 
+### 用表格显示搜索结果
 
+好像有要求用表格显示搜索结果。虽然老师的代码已经用表格显示了，但是没有框看着难受。
+
+在`search/public/search.html`里的`<table>`标签加一个`<border>`属性就好了。
+
+```javascript
+<table width="100%" id="record2" border="1"></table>
+```
+
+
+
+然后就发现了原来代码的一个小错误：
+
+![image-20200426204721985](.note-typoraPic/image-20200426204721985.png)
+
+后面全都多了一个单元格
+
+```html
+for (let list of data) {
+	let table = '<tr class="cardLayout"><td>';
+	Object.values(list).forEach(element => {
+		table += (element + '</td><td>');
+	});
+	$("#record2").append(table + '</td></tr>');
+}
+```
+
+修改了一下
+
+```html
+for (let list of data) {
+	let table = '<tr class="cardLayout">';
+	Object.values(list).forEach(element => {
+		table += ('<td>' + element + '</td>');
+	});
+	$("#record2").append(table + '</tr>');
+}
+```
+
+但是还爬了很多数据都没有用上，心里感觉不爽。
+
+于是我把表头改称了url，title, keywords, description。 虽然用到的数据实际上变少了，但是感觉合理了一些。
+
+然后routes也要同步的修改。该为询问与表头相关的四个部分：
+
+```javascript
+router.get('/process_get', function(request, response) {
+    //sql字符串和参数
+    var fetchSql = "select url,title,keywords,description " +
+        "from fetches where title like '%" + request.query.title + "%'";
+    mysql.query(fetchSql, function(err, result, fields) {
+        response.writeHead(200, {
+            "Content-Type": "application/json"
+        });
+        response.write(JSON.stringify(result));
+        response.end();
+    });
+});
+```
+
+最后我把css改称了自己跟博客的一样的[css](https://github.com/ya-hong/crawler/tree/master/search_site/public/css)。
+
+```html
+<header>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+    <link rel="stylesheet" type="text/css" href="./css/clean-blog.min.css">
+</header>
+```
+
+不过只有字体和复制的颜色有比较明显的变化。
+
+### 代码的封装
+
+这个其实一开始就该做了。我调试完第一个网站的代码后，把它复制了一遍来写第二个网站的代码。等我发现代码有问题的时候就已经要改两份代码了，瞬间觉得自己是nt。
 
 ### 一些细节
 
