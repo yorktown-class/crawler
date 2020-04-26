@@ -219,6 +219,12 @@ https://github.com/ya-hong/crawler/blob/master/del/baidunews.js
 
 因为被异步搞懵了，我这里的callback完全是乱写的。
 
+基本就是简单的用request获取html，再用cheerio查找标题、链接和正文，然后写入文件。
+
+### 稍微改进一点
+
+
+
 # 成果展示
 
 
