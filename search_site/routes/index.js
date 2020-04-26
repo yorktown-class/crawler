@@ -10,7 +10,7 @@ router.get('/', function(req, res, next) {
 router.get('/process_get', function(request, response) {
     //sql字符串和参数
     var fetchSql = "select url,title,keywords,description " +
-        "from fetches where title like '%" + request.query.title + "%'";
+        "from fetches where title like '%" + request.query.title + "%' or content like '%" + request.query.title + "%'";
     mysql.query(fetchSql, function(err, result, fields) {
         response.writeHead(200, {
             "Content-Type": "application/json"

@@ -331,6 +331,25 @@ router.get('/process_get', function(request, response) {
 });
 ```
 
+感觉只从标题搜索结果太少了，我就同时从标题和内容搜索了：
+
+```javascript
+router.get('/process_get', function(request, response) {
+    //sql字符串和参数
+    var fetchSql = "select url,title,keywords,description " +
+        "from fetches where title like '%" + request.query.title + "%' or content like '%" + request.query.title + "%'";
+    mysql.query(fetchSql, function(err, result, fields) {
+        response.writeHead(200, {
+            "Content-Type": "application/json"
+        });
+        response.write(JSON.stringify(result));
+        response.end();
+    });
+});
+```
+
+
+
 最后我把css改称了自己跟博客的一样的[css](https://github.com/ya-hong/crawler/tree/master/search_site/public/css)。
 
 ```html
@@ -346,15 +365,65 @@ router.get('/process_get', function(request, response) {
 
 这个其实一开始就该做了。我调试完第一个网站的代码后，把它复制了一遍来写第二个网站的代码。等我发现代码有问题的时候就已经要改两份代码了，瞬间觉得自己是nt。
 
+还好问题发现的早，不然就要调三四份了。
+
+由于用了`eval()`所以还是很容易抽出不同网站爬虫的相同代码的。
+
+原来的代码：https://github.com/ya-hong/crawler/blob/master/teachersCode/crawler2.js
+
+显然`request`,`seedget`,`newsGet` 这三个函数对每个网站都是一样的。可以写一个[crawls.js](https://github.com/ya-hong/crawler/blob/master/crawler.js)把他们写到一起。
+
+然后每份爬虫代码都把source_name, title_format, url_reg 这些变量打包传递给crawls.js。这样每个爬虫代码都很短，而且crawls.js每次要修改的时候也不需要在多个代码里修改了。
+
+```javascript
+var crawler = require('./crawler');
+var format = {
+    source_name : "中国新闻网",
+    myEncoding : "utf-8",
+    seedURL : 'http://www.chinanews.com/',
+    seedURL_format : "$('a')",
+    keywords_format : " $('meta[name=\"keywords\"]').eq(0).attr(\"content\")",
+    title_format : "$('title').text()",
+    date_format : "$('#pubtime_baidu').text()",
+    author_format : "$('#editor_baidu').text()",
+    content_format : "$('.left_zw').text()",
+    desc_format : " $('meta[name=\"description\"]').eq(0).attr(\"content\")",
+    source_format : "$('#source_baidu').text()",
+    url_reg : /^\/\/www\.chinanews\.com\/.*\/(\d{4})\/(\d{2})-(\d{2})\/(\d{7}).shtml$/,
+    regExp : /((\d{4}|\d{2})(\-|\/|\.)\d{1,2}\3\d{1,2})|(\d{4}年\d{1,2}月\d{1,2}日)/
+};
+crawler.seedget(format);
+```
+
+
+
 ### 一些细节
 
-data的特判
++   一些特判
+
+    不管怎么判断，光凭url还是不能确定这个页面一定是新闻页面。而且即使是新闻页面也有可能出现不一样的格式。所以可能会读不到date，如果读不到date直接进行后续操作就会报错，所以必须判断它有没有读取到。
+
++   输出顺序
+
+    js的输出可能不会按自己想象的来，也是异步特性的弊端吧。即使我已经知道了js是异步的，看到console的输出还是懵了。感觉这个特性给debug带来极大困难。
+
++   之前的代码并不能保证不写入重复的url
+
+    如果在种子页面上读取了同一个url两次，就可能会写入重复的url。由于异步特性，js先对所有url判断数据库中是否有相同url，然后再将所有url写入，导致了重复。这其实问题不大，但是一开始看到我还以为mysql出问题了。
 
 # 成果展示
 
+![image-20200426212813943](.note-typoraPic/image-20200426212813943.png)
 
+其实还是很简陋，只有复制颜色稍微漂亮了一点。
+
+不够修改了一下搜索，起码结果变多了。
 
 # 学习体会
 
+（施工中）
 
+膜法时间
+
+感觉自己还是too young too simple, sometimes naive， 知识水平还不够，只能抄老师代码。感觉这次实验，自己写的代码和老师写的代码只有三七开吧。但是也不能过于神话老师的代码，要辨证的看待。早期确实依赖老师的代码来写爬虫，但是最终还是要尽量用自己的代码的。
 
